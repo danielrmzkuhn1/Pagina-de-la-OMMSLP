@@ -162,10 +162,10 @@ CREATE TABLE participacion (
     -- Si id_escuela_edicion no es NULL, obliga a que coincidan escuela
     -- y edicion con el registro escolar referenciado.
     CONSTRAINT fk_participacion_escuela_edicion
-        FOREIGN KEY (id_escuela_edicion, id_escuela, id_edicion)
-        REFERENCES escuela_edicion
-            (id_escuela_edicion, id_escuela, id_edicion)
-        ON UPDATE CASCADE ON DELETE RESTRICT
+		FOREIGN KEY (id_escuela_edicion, id_escuela, id_edicion)
+		REFERENCES escuela_edicion
+			(id_escuela_edicion, id_escuela, id_edicion)
+		ON UPDATE RESTRICT ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
 -- ============================================================

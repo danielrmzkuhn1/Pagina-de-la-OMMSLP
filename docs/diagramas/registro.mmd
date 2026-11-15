@@ -181,8 +181,6 @@ classDiagram
     Participacion "1" --> "0..*" DecisionAvance : tiene decisiones
     Etapa "1" --> "0..*" DecisionAvance : determina avance
 
-    Usuario "1" --> "0..*" Examen : crea
-    Usuario "1" --> "0..*" Problema : redacta
     Usuario "1" --> "0..*" DecisionAvance : decide
     Usuario "0..1" --> "0..*" AplicacionExamen : captura resultados
 
