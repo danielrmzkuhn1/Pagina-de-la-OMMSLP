@@ -1,0 +1,45 @@
+classDiagram
+    direction LR
+
+    class Escuela {
+        +int CCT
+        +string nombre
+        +string municipio
+        +string zona
+    }
+
+    class Participante {
+        +int id_participante
+        +string nombre
+        +string apellidos
+    }
+
+    class EscuelaEdicion {
+        +int id_escuela_edicion
+        +int id_escuela
+        +int id_edicion
+        +date fecha_registro
+        +string estado
+    }
+
+    class Edicion {
+        +int anio
+        +string nombre
+    }
+
+    class Participacion {
+        +int id_participacion
+        +int id_participante
+        +int id_edicion
+        +int id_escuela
+        +int grado
+        +string medio_registro
+        +date fecha_registro
+    }
+
+    Escuela "1" <-- "0..*" EscuelaEdicion : se registra
+    Edicion "1" <-- "0..*" EscuelaEdicion : registra
+
+    Escuela "1" <-- "0..*" Participacion : escuela de origen
+    Participante "1" <-- "0..*" Participacion : tiene
+    Edicion "1" <-- "0..*" Participacion : corresponde a
