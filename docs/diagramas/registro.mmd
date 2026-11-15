@@ -1,12 +1,29 @@
+
 classDiagram
-    direction LR
+    direction TB
+
+    %% ESCUELAS Y EDICIONES
 
     class Escuela {
-        +int CCT
+        +string CCT
         +string nombre
         +string municipio
         +string zona
     }
+
+    class Edicion {
+        +int id_edicion
+        +int anio
+    }
+
+    class EscuelaEdicion {
+        +int id_escuela_edicion
+        +int CCT
+        +int id_edicion
+        +date fecha_registro
+    }
+
+    %% PARTICIPANTES
 
     class Participante {
         +int id_participante
@@ -14,16 +31,8 @@ classDiagram
         +string apellidos
     }
 
-    class EscuelaEdicion {
-        +int id_escuela_edicion
-        +int id_escuela
-        +int id_edicion
-        +date fecha_registro
-        +string estado
-    }
-
-    class Edicion {
-        +int anio
+    class Categoria {
+        +int id_categoria
         +string nombre
     }
 
@@ -31,15 +40,151 @@ classDiagram
         +int id_participacion
         +int id_participante
         +int id_edicion
-        +int id_escuela
-        +int grado
+        +int CCT
+        +int id_categoria
+        +int id_escuela_edicion
         +string medio_registro
         +date fecha_registro
     }
 
-    Escuela "1" <-- "0..*" EscuelaEdicion : se registra
-    Edicion "1" <-- "0..*" EscuelaEdicion : registra
+    %% ETAPAS Y EXAMENES
 
-    Escuela "1" <-- "0..*" Participacion : escuela de origen
-    Participante "1" <-- "0..*" Participacion : tiene
-    Edicion "1" <-- "0..*" Participacion : corresponde a
+    class Etapa {
+        +int id_etapa
+        +int id_edicion
+        +string nombre
+        +datetime fecha_inicio
+        +datetime fecha_fin
+        +string estado
+    }
+
+    class Examen {
+        +int id_examen
+        +int id_etapa
+        +string titulo
+        +datetime disponible_desde
+        +datetime disponible_hasta
+        +string estado
+    }
+
+    class ExamenCategoria {
+        +int id_examen_categoria
+        +int id_examen
+        +int id_categoria
+    }
+
+    %% PROBLEMAS Y ARCHIVOS
+
+    class Problema {
+        +int id_problema
+        +int id_examen
+        +json contenido_editor
+        +string respuesta_correcta
+        +int puntaje
+        +text solucion_privada
+    }
+
+    class ArchivoProblema {
+        +int id_archivo
+        +int id_problema
+        +string nombre_archivo
+        +string ruta_archivo
+        +string tipo_mime
+        +int tamano_bytes
+        +int orden
+    }
+
+    %% APLICACIONES Y RESULTADOS
+
+    class AplicacionExamen {
+        +int id_aplicacion
+        +int id_participacion
+        +int id_examen
+        +int id_usuario_captura
+        +string modalidad
+        +string tipo_datos_recibidos
+        +string estado
+        +datetime fecha_inicio
+        +datetime fecha_entrega
+        +int puntaje_total
+        +string tipo_calificacion
+    }
+
+    class Respuesta {
+        +int id_respuesta
+        +int id_aplicacion
+        +int id_problema
+        +string valor_respuesta
+        +int puntaje_obtenido
+        +boolean es_correcta
+        +datetime fecha_registro
+    }
+
+    class DecisionAvance {
+        +int id_decision
+        +int id_participacion
+        +int id_etapa
+        +int id_usuario_decisor
+        +boolean avanza
+        +datetime fecha_decision
+        +text observaciones
+    }
+
+    %% USUARIOS Y PERMISOS
+
+    class Usuario {
+        +int id_usuario
+        +string nombre
+        +string correo
+        +string password_hash
+        +string estado
+        +datetime fecha_creacion
+    }
+
+    class Rol {
+        +int id_rol
+        +string nombre
+        +string descripcion
+    }
+
+    class UsuarioRol {
+        +int id_usuario_rol
+        +int id_usuario
+        +int id_rol
+    }
+
+    %% RELACIONES
+
+    Escuela "1" --> "0..*" EscuelaEdicion : participa en
+    Edicion "1" --> "0..*" EscuelaEdicion : recibe registros
+
+    Escuela "1" --> "0..*" Participacion : escuela de origen
+    Participante "1" --> "0..*" Participacion : tiene historial
+    Edicion "1" --> "0..*" Participacion : corresponde a
+    Categoria "1" --> "0..*" Participacion : clasifica
+    EscuelaEdicion "0..1" --> "0..*" Participacion : registro escolar
+
+    Edicion "1" --> "0..*" Etapa : contiene
+    Etapa "1" --> "0..*" Examen : tiene
+
+    Examen "1" --> "0..*" ExamenCategoria : se aplica a
+    Categoria "1" --> "0..*" ExamenCategoria : tiene examenes
+
+    Examen "1" --> "0..*" Problema : contiene
+    Problema "1" --> "0..*" ArchivoProblema : incluye
+
+    Participacion "1" --> "0..*" AplicacionExamen : presenta
+    Examen "1" --> "0..*" AplicacionExamen : es presentado
+    AplicacionExamen "1" --> "0..*" Respuesta : almacena
+    Problema "1" --> "0..*" Respuesta : recibe
+
+    Participacion "1" --> "0..*" DecisionAvance : tiene decisiones
+    Etapa "1" --> "0..*" DecisionAvance : determina avance
+
+    Usuario "1" --> "0..*" Examen : crea
+    Usuario "1" --> "0..*" Problema : redacta
+    Usuario "1" --> "0..*" DecisionAvance : decide
+    Usuario "0..1" --> "0..*" AplicacionExamen : captura resultados
+
+    Usuario "1" --> "0..*" UsuarioRol : tiene
+    Rol "1" --> "0..*" UsuarioRol : asignado a
