@@ -11,16 +11,6 @@ CREATE DATABASE IF NOT EXISTS omm_slp
 
 USE omm_slp;
 
--- DROP TABLE categoria;
--- DROP TABLE edicion;
--- DROP TABLE escuela_edicion;
--- DROP TABLE escuela;
--- DROP TABLE etapa;
--- DROP TABLE participante;
--- DROP TABLE rol;
--- DROP TABLE usuario; 
--- DROP TABLE usuario_rol;
-
 -- ===========================================================
 -- 1. CATALOGOS Y CUENTAS
 -- ============================================================
@@ -186,14 +176,11 @@ CREATE TABLE etapa (
     id_etapa INT UNSIGNED NOT NULL AUTO_INCREMENT,
     id_edicion INT UNSIGNED NOT NULL,
     nombre VARCHAR(120) NOT NULL,
-    orden SMALLINT UNSIGNED NOT NULL,
     fecha_inicio DATETIME NULL,
     fecha_fin DATETIME NULL,
     estado VARCHAR(20) NOT NULL DEFAULT 'borrador',
     PRIMARY KEY (id_etapa),
-    UNIQUE KEY uq_etapa_orden_edicion (id_edicion, orden),
     UNIQUE KEY uq_etapa_nombre_edicion (id_edicion, nombre),
-    CONSTRAINT ck_etapa_orden_positivo CHECK (orden > 0),
     CONSTRAINT ck_etapa_estado
         CHECK (estado IN ('borrador', 'programada', 'activa', 'cerrada')),
     CONSTRAINT ck_etapa_fechas
@@ -351,36 +338,6 @@ CREATE TABLE respuesta (
         ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
--- ============================================================
--- 7. DECISIONES DEL COMITE
--- ============================================================
-
-CREATE TABLE decision_avance (
-    id_decision INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    id_participacion INT UNSIGNED NOT NULL,
-    id_etapa INT UNSIGNED NOT NULL,
-    id_usuario_decisor INT UNSIGNED NOT NULL,
-    avanza BOOLEAN NOT NULL,
-    fecha_decision DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    observaciones TEXT NULL,
-    PRIMARY KEY (id_decision),
-    -- Una decision vigente por participante y etapa.
-    UNIQUE KEY uq_decision_participacion_etapa (id_participacion, id_etapa),
-    CONSTRAINT ck_decision_avanza CHECK (avanza IN (0, 1)),
-    KEY ix_decision_etapa (id_etapa),
-    CONSTRAINT fk_decision_participacion
-        FOREIGN KEY (id_participacion) REFERENCES participacion (id_participacion)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
-    CONSTRAINT fk_decision_etapa
-        FOREIGN KEY (id_etapa) REFERENCES etapa (id_etapa)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
-    CONSTRAINT fk_decision_usuario
-        FOREIGN KEY (id_usuario_decisor) REFERENCES usuario (id_usuario)
-        ON UPDATE CASCADE ON DELETE RESTRICT
-) ENGINE=InnoDB;
-
-USE omm_slp;
-
 ALTER TABLE participante
 ADD COLUMN genero ENUM(
     'MASCULINO',
@@ -409,7 +366,3 @@ ADD COLUMN tipo ENUM(
 -- 7. El backend debe validar que la categoria del participante este asociada
 --    al examen, que el examen corresponda a la edicion de la participacion y
 --    que cada respuesta corresponda a un problema del examen presentado.
--- 8. El esquema supone una sola aplicacion por participante y examen y una
---    sola decision por participante y etapa. Revisar si habra reintentos o
---    si se necesita conservar cambios sucesivos de decisiones.
--- 9. MySQL aplica CHECK constraints a partir de MySQL 8.0.16.

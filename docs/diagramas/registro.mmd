@@ -122,16 +122,6 @@ classDiagram
         +datetime fecha_registro
     }
 
-    class DecisionAvance {
-        +int id_decision
-        +int id_participacion
-        +int id_etapa
-        +int id_usuario_decisor
-        +boolean avanza
-        +datetime fecha_decision
-        +text observaciones
-    }
-
     %% USUARIOS Y PERMISOS
 
     class Usuario {
@@ -180,10 +170,6 @@ classDiagram
     AplicacionExamen "1" --> "0..*" Respuesta : almacena
     Problema "1" --> "0..*" Respuesta : recibe
 
-    Participacion "1" --> "0..*" DecisionAvance : tiene decisiones
-    Etapa "1" --> "0..*" DecisionAvance : determina avance
-
-    Usuario "1" --> "0..*" DecisionAvance : decide
     Usuario "0..1" --> "0..*" AplicacionExamen : captura resultados
 
     Usuario "1" --> "0..*" UsuarioRol : tiene
