@@ -11,7 +11,17 @@ CREATE DATABASE IF NOT EXISTS omm_slp
 
 USE omm_slp;
 
--- ============================================================
+-- DROP TABLE categoria;
+-- DROP TABLE edicion;
+-- DROP TABLE escuela_edicion;
+-- DROP TABLE escuela;
+-- DROP TABLE etapa;
+-- DROP TABLE participante;
+-- DROP TABLE rol;
+-- DROP TABLE usuario; 
+-- DROP TABLE usuario_rol;
+
+-- ===========================================================
 -- 1. CATALOGOS Y CUENTAS
 -- ============================================================
 
@@ -368,6 +378,22 @@ CREATE TABLE decision_avance (
         FOREIGN KEY (id_usuario_decisor) REFERENCES usuario (id_usuario)
         ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
+
+USE omm_slp;
+
+ALTER TABLE participante
+ADD COLUMN genero ENUM(
+    'MASCULINO',
+    'FEMENINO',
+    'OTRO',
+    'NO_ESPECIFICADO'
+);
+
+ALTER TABLE escuela
+ADD COLUMN tipo ENUM(
+    'PUBLICA',
+    'PRIVADA'
+);
 
 -- ============================================================
 -- NOTAS DE DISENO Y VALIDACIONES PENDIENTES
